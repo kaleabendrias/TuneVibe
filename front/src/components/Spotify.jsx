@@ -11,7 +11,8 @@ const SpotifyAuthComponent = () => {
     'user-read-email',
     'user-top-read',
     'user-library-read',
-    'playlist-read-private'
+    'playlist-read-private',
+    'user-read-recently-played'
   ];
 
   const handleLogin = () => {
