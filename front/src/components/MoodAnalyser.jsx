@@ -67,7 +67,8 @@ const MoodAnalyzer = () => {
   return (
     <Card>
       <CardContent className="p-6">
-        <h2 className="text-xl font-bold mb-4">Mood Analyzer</h2>
+        <h2 className="text-xl font-bold m-2">Mood Analyzer</h2>
+        <h2 className='text-lg text-gray-500 mb-4'>Mood analysis based on recent track features.</h2>
         {mood ? (
           <p className="mb-4">Based on your recent listening, your mood seems to be: <strong>{mood}</strong></p>
         ) : (
