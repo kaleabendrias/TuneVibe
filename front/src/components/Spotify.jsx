@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 
+
 const SpotifyAuthComponent = () => {
   const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
   const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
@@ -21,6 +22,7 @@ const SpotifyAuthComponent = () => {
   };
 
   return (
+    <>
     <Card className="w-[350px] mx-auto mt-10">
       <CardHeader>
         <h2 className="text-2xl font-bold">Login with Spotify</h2>
@@ -34,6 +36,9 @@ const SpotifyAuthComponent = () => {
         </Button>
       </CardFooter>
     </Card>
+
+    
+    </>
   );
 };
 

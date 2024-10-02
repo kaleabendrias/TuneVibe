@@ -46,6 +46,7 @@ const MusicHeatmap = () => {
 
     } catch (error) {
       console.error('Error fetching listening history:', error);
+      console.log(error)
       setError('Error fetching listening history. Please try again later.');
     }
   };

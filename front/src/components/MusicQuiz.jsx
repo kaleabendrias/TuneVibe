@@ -7,6 +7,8 @@ const MusicQuiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
+  const [audio, setAudio] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     fetchTopTracks();
@@ -44,6 +46,7 @@ const MusicQuiz = () => {
 
       return {
         trackName: track.name,
+        previewUrl: track.preview_url,
         answers: shuffledAnswers,
         correctAnswer: correctAnswer,
       };
@@ -57,6 +60,10 @@ const MusicQuiz = () => {
   };
 
   const handleAnswerClick = (selectedAnswer) => {
+    if (audio) {
+      audio.pause();
+      setIsPlaying(false);
+    }
     if (selectedAnswer === questions[currentQuestion].correctAnswer) {
       setScore(score + 1);
     }
@@ -69,12 +76,35 @@ const MusicQuiz = () => {
     }
   };
 
+  const playPreview = (previewUrl) => {
+    if (audio && isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+    } else {
+      if (audio) {
+        audio.pause();
+      }
+      const newAudio = new Audio(previewUrl);
+      setAudio(newAudio);
+      newAudio.play();
+      setIsPlaying(true);
+
+      newAudio.onended = () => setIsPlaying(false);
+    }
+  };
+
   const restartQuiz = () => {
     setCurrentQuestion(0);
     setScore(0);
     setShowScore(false);
     fetchTopTracks();
   };
+
+  useEffect(() => {
+    if (questions.length > 0) {
+      playPreview(questions[0].previewUrl); // Start the first preview when questions load
+    }
+  }, [questions]);
 
   if (questions.length === 0) {
     return <div>Loading quiz...</div>;
@@ -112,6 +142,11 @@ const MusicQuiz = () => {
             </Button>
           ))}
         </div>
+        {currentQ.previewUrl && (
+          <Button className="mt-4" onClick={() => playPreview(currentQ.previewUrl)}>
+            {isPlaying ? "Pause Preview" : "Play Preview"}
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from './AuthContext';
 
 const SpotifyCallback = () => {
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { setAccessToken, setRefreshToken } = useAuth();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const code = urlParams.get('code');
-    const error = urlParams.get('error');
+    const authError = urlParams.get('error');
 
-    if (error) {
-      setError('Authorization failed: ' + error);
+    if (authError) {
+      setError('Authorization failed: ' + authError);
       return;
     }
 
@@ -30,7 +32,12 @@ const SpotifyCallback = () => {
       const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
       const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
 
-      const response = await fetch('https://accounts.spotify.com/api/token', {
+      // Debug logging
+      console.log('Exchanging code for tokens...');
+      console.log('Code:', code);
+      console.log('Redirect URI:', REDIRECT_URI);
+
+      const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -40,21 +47,29 @@ const SpotifyCallback = () => {
           grant_type: 'authorization_code',
           code: code,
           redirect_uri: REDIRECT_URI
-        })
+        }).toString()
       });
 
-      if (!response.ok) {
-        throw new Error('HTTP status ' + response.status);
+      const data = await tokenResponse.json();
+
+      if (!tokenResponse.ok) {
+        throw new Error(`${data.error}: ${data.error_description}`);
       }
 
-      const data = await response.json();
+      console.log('Token exchange successful');
+      
+      setAccessToken(data.access_token);
+      setRefreshToken(data.refresh_token);
 
       localStorage.setItem('spotify_access_token', data.access_token);
       localStorage.setItem('spotify_refresh_token', data.refresh_token);
 
+      console.log('Access token set, navigating to dashboard');
       navigate('/dashboard');
+      window.location.reload();
     } catch (error) {
-      setError('Failed to exchange code for tokens: ' + error.message);
+      console.error('Token exchange error:', error);
+      setError(`Failed to exchange code for tokens: ${error.message}`);
     }
   };
 
