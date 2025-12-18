@@ -27,10 +27,8 @@ const MusicHeatmap = () => {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         const data = await response.json();
-        console.log(data)
         if (data?.items?.length) {
           allItems = allItems.concat(data.items);
-          console.log(data.next)
           nextUrl = data.next;
         } else {
           nextUrl = null;
@@ -42,7 +40,6 @@ const MusicHeatmap = () => {
       } else {
         setError('No listening history data found');
       }
-      console.log(allItems)
 
     } catch (error) {
       console.error('Error fetching listening history:', error);

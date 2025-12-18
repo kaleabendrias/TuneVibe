@@ -32,10 +32,6 @@ const SpotifyCallback = () => {
       const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET;
       const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
 
-      // Debug logging
-      console.log('Exchanging code for tokens...');
-      console.log('Code:', code);
-      console.log('Redirect URI:', REDIRECT_URI);
 
       const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
@@ -56,7 +52,6 @@ const SpotifyCallback = () => {
         throw new Error(`${data.error}: ${data.error_description}`);
       }
 
-      console.log('Token exchange successful');
       
       setAccessToken(data.access_token);
       setRefreshToken(data.refresh_token);
@@ -64,7 +59,6 @@ const SpotifyCallback = () => {
       localStorage.setItem('spotify_access_token', data.access_token);
       localStorage.setItem('spotify_refresh_token', data.refresh_token);
 
-      console.log('Access token set, navigating to dashboard');
       navigate('/dashboard');
       window.location.reload();
     } catch (error) {
